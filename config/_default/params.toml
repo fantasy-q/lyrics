@@ -1,0 +1,28 @@
+# -- 主题行为覆盖（其余用主题自带默认值） --
+colorScheme = "blowfish"
+defaultAppearance = "light"
+autoSwitchAppearance = true
+enableSearch = true
+
+[header]
+  layout = "basic"
+
+[article]
+  showDate = false
+  showDateUpdated = false
+  showAuthor = false
+  showReadingTime = false
+  showWordCount = false
+  showTaxonomies = false
+  showBreadcrumbs = false
+  showPagination = false
+  showTableOfContents = false
+  showZenMode = false
+  showViews = false
+  showLikes = false
+  showHero = false
+
+[footer]
+  showCopyright = true
+  showThemeAttribution = true
+  showAppearanceSwitcher = true

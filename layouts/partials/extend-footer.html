@@ -1,13 +1,4 @@
-{{ define "main" }}
-<h1 class="song-title">{{ .Title }}{{ with .Params.romaji }} <span class="romaji">({{ . }})</span>{{ end }}</h1>
-<p class="song-meta">
-  {{ with .Params.artist }}<span class="song-artist">{{ . }}</span>{{ end }}
-  {{ with .Params.language }}<span class="song-lang">[{{ . }}]</span>{{ end }}
-</p>
-{{ with .Params.source_url }}<p class="song-source"><a href="{{ . }}" target="_blank" rel="noopener">来源链接</a></p>{{ end }}
-
-{{ .Content }}
-
+{{/* Blowfish 扩展钩子：所有页面底部注入复制歌词按钮的脚本（按钮由 lyrics shortcode 生成） */}}
 <script>
 (function () {
   var payload = null;
@@ -49,4 +40,3 @@
   });
 })();
 </script>
-{{ end }}

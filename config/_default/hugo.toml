@@ -1,0 +1,14 @@
+# -- Site 基础配置（Blowfish） --
+theme = "blowfish"
+baseURL = "https://fantasy-q.github.io/lyrics/"  # CI 会用 configure-pages 输出的 baseURL 覆盖
+defaultContentLanguage = "zh-cn"
+enableRobotsTXT = true
+hasCJKLanguage = true
+enableEmoji = true
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"

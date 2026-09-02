@@ -2,6 +2,7 @@
 title = "アルペジオ"
 romaji = "Arpeggio"
 artist = "[Alexandros]"
+description = "[Alexandros] — Arpeggio"
 language = "ja"
 source_url = ""
 # 字段说明：

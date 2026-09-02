@@ -8,3 +8,6 @@ resources/
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# 主题（本地 clone，不入库；CI 中另行 clone）
+themes/

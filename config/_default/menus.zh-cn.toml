@@ -1,0 +1,5 @@
+# -- 主菜单 --
+[[main]]
+  name = "歌曲"
+  pageRef = "songs"
+  weight = 10

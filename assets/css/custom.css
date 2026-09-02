@@ -1,0 +1,87 @@
+/* ---- 歌词显示（Blowfish custom css，assets/css/custom.css 自动加载）---- */
+
+.page-intro {
+  opacity: 0.7;
+}
+
+.song-list {
+  list-style: none;
+  margin: 1.2rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.song-list li {
+  border-bottom: 1px solid rgba(128, 128, 128, 0.25);
+  padding-bottom: 0.9rem;
+}
+
+.song-list a {
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.song-list a:hover {
+  text-decoration: underline;
+}
+
+.song-list .romaji,
+.song-list .artist {
+  font-weight: 400;
+  opacity: 0.65;
+  margin-left: 0.15em;
+}
+
+/* 工具栏与复制按钮 */
+.toolbar {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.toolbar-label {
+  opacity: 0.7;
+  font-size: 0.9em;
+}
+
+.copy-btn {
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.9rem;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  background: transparent;
+  opacity: 0.85;
+  cursor: pointer;
+}
+
+.copy-btn:hover {
+  opacity: 1;
+}
+
+/* ruby 注音：行高预留注音空间，避免压行 */
+.lyrics {
+  margin-top: 0.8rem;
+}
+
+.lyric-line {
+  line-height: 2.5;
+  margin: 0 0 0.2em;
+  font-size: 1.05em;
+}
+
+.lyric-line.empty {
+  height: 1em;
+}
+
+ruby {
+  ruby-position: over;
+}
+
+rt {
+  font-size: 0.5em;
+  opacity: 0.6;
+}

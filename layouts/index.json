@@ -1,22 +1,33 @@
-{{- /* 全站搜索索引：index.json（home 的 JSON 输出）。
-      条目 = 元数据 + 去注音原文 + 假名全文，供 /search/ 页前端检索。 */ -}}
-{{- $entries := slice -}}
+{{- /* 全站搜索索引（schema 与 Blowfish 内置一致：title/summary/content/permalink）。
+      歌词页的 content 用「去注音原文 + 假名」（来自 lyrics shortcode 写入的页面 Store），
+      保证搜「喜び / 笑えない」这类跨注音词的命中质量。 */ -}}
+{{- $index := slice -}}
 {{- range site.RegularPages -}}
-  {{- if eq .Section "songs" -}}
-    {{- /* 先渲染该页正文（触发 lyrics shortcode 填充 Store），再取纯文本 */ -}}
-    {{- $discard := .Content -}}
+  {{- if not .Params.excludeFromSearch -}}
+    {{- $content := .Plain -}}
     {{- $plain := .Store.Get "lyrics-plain" -}}
     {{- if $plain -}}
-      {{- $entries = $entries | append (dict
-        "title"    .Title
-        "romaji"   (.Params.romaji | default "")
-        "artist"   (.Params.artist | default "")
-        "language" (.Params.language | default "")
-        "url"      .RelPermalink
-        "plain"    $plain
-        "kana"     (.Store.Get "lyrics-kana" | default "")
-      ) -}}
+      {{- $kana := .Store.Get "lyrics-kana" | default "" -}}
+      {{- $content = printf "%s\n%s" $plain $kana -}}
     {{- end -}}
+    {{- $summary := .Params.description | default "" -}}
+    {{- if $plain -}}
+      {{- if eq $summary "" -}}
+        {{- range $ln := split $plain "\n" -}}
+          {{- if and (eq $summary "") (ne (strings.TrimSpace $ln) "") -}}
+            {{- $summary = $ln -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- else if eq $summary "" -}}
+      {{- $summary = .Summary | plainify | htmlUnescape -}}
+    {{- end -}}
+    {{- $index = $index | append (dict
+      "title"    (.Title | emojify | safeJS)
+      "summary"  ($summary | safeJS)
+      "content"  ($content | safeJS)
+      "permalink" .RelPermalink
+    ) -}}
   {{- end -}}
 {{- end -}}
-{{- $entries | jsonify -}}
+{{- $index | jsonify -}}

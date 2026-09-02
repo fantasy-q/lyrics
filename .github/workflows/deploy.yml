@@ -21,6 +21,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Blowfish theme (not committed)
+        run: git clone --depth 1 https://github.com/nunocoracao/blowfish.git themes/blowfish
+
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
