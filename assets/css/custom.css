@@ -68,13 +68,14 @@
 }
 
 .lyric-line {
-  line-height: 2.5;
+  /* line-height: 2; */
   margin: 0 0 0.2em;
-  font-size: 1.05em;
+  font-size: 2em;
+  font-weight: 900;
 }
 
 .lyric-line.empty {
-  height: 1em;
+  height: 1.5em;
 }
 
 ruby {
@@ -82,6 +83,82 @@ ruby {
 }
 
 rt {
-  font-size: 0.5em;
-  opacity: 0.6;
+  font-size: 0.6em;
+  opacity: 0.8;
+  font-weight: 900;
+}
+
+/* ---- 衬线字体（Google Noto Serif；加载见 layouts/partials/extend-head.html）----
+   全站基准为衬线；页面 front matter language → article[data-lang] 切换主字体族 */
+body {
+  font-family:
+    "Noto Serif", "Noto Serif SC", "Noto Serif JP", "Noto Serif KR", ui-serif,
+    Georgia, serif;
+}
+
+article[data-lang="ja"] {
+  font-family: "Noto Serif JP", "Noto Serif", ui-serif, Georgia, serif;
+}
+
+article[data-lang="ko"] {
+  font-family:
+    "Montserrat", "Noto Serif KR", "Noto Serif", ui-serif, Georgia, serif;
+
+  & rt {
+    /* font-family: "Noto Sans KR", "Noto Sans"; */
+  }
+}
+
+article[data-lang="zh"] {
+  font-family: "Noto Serif SC", "Noto Serif", ui-serif, Georgia, serif;
+}
+
+article[data-lang="en"],
+article:not([data-lang]),
+article[data-lang=""] {
+  font-family: "Noto Serif", "Noto Serif SC", ui-serif, Georgia, serif;
+}
+
+/* Montserrat 用法示例：
+   罗马字题名等拉丁文本用 Montserrat（缺字回落衬线族）。
+   其他想用 Montserrat 的地方照抄 font-family: "Montserrat", ... 即可。 */
+.romaji {
+  font-family: "Montserrat", "Noto Serif", ui-serif, Georgia, serif;
+}
+
+/* ---- 罗马字注音行：(…) 整行内容，不是歌词正文 ----
+   开关：工具栏「罗马字」按钮给 .lyrics 加/去 .no-romaji；
+   样式单独在此调（字号/颜色/斜体/字距/字体） */
+.romaji-line {
+  font-family: "Montserrat", "Noto Serif", ui-serif, Georgia, serif;
+  font-size: 1em;
+  font-weight: 400;
+  opacity: 0.75;
+  /* letter-spacing: 0.03em; */
+  margin: 0 0 0.1em;
+}
+
+.lyrics.no-romaji .romaji-line {
+  display: none;
+}
+
+/* 罗马字开关按钮（与复制按钮同风格；关时为半透明删除线态） */
+.romaji-toggle {
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.9rem;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  background: transparent;
+  opacity: 0.85;
+  cursor: pointer;
+}
+
+.romaji-toggle:hover {
+  opacity: 1;
+}
+
+.romaji-toggle[aria-pressed="false"] {
+  opacity: 0.45;
+  text-decoration: line-through;
 }

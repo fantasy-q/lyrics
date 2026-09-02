@@ -1,6 +1,7 @@
-{{/* Blowfish 扩展钩子：所有页面底部注入复制歌词按钮的脚本（按钮由 lyrics shortcode 生成） */}}
+{{/* Blowfish 扩展钩子：全站注入脚本（复制歌词按钮 + 罗马字注音开关） */}}
 <script>
 (function () {
+  /* ---- 复制歌词（按钮由 lyrics shortcode 生成） ---- */
   var payload = null;
   var node = document.getElementById('copy-data');
   if (node) {
@@ -38,5 +39,24 @@
       }
     });
   });
+
+  /* ---- 罗马字注音开关（localStorage 记忆，默认开） ---- */
+  var romajiBtn = document.querySelector('.romaji-toggle');
+  var lyricsBox = document.querySelector('.lyrics');
+  if (romajiBtn && lyricsBox) {
+    var KEY = 'lyrics-romaji-on';
+    var on = localStorage.getItem(KEY) !== 'off';
+    function applyRomaji() {
+      lyricsBox.classList.toggle('no-romaji', !on);
+      romajiBtn.textContent = on ? '罗马字：开' : '罗马字：关';
+      romajiBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    applyRomaji();
+    romajiBtn.addEventListener('click', function () {
+      on = !on;
+      localStorage.setItem(KEY, on ? 'on' : 'off');
+      applyRomaji();
+    });
+  }
 })();
 </script>

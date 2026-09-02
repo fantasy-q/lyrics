@@ -7,26 +7,30 @@
     {{< /lyrics >}}
 
   规则与校验（违反则 errorf 构建报错，带行号）：
-    - 注音只允许假名
+    - 注音内容字符集随语言：ja = 假名；ko = 谚文（汉字{谚文读音}）
     - {注音} 必须紧跟在连续汉字串后面（整词连标，送假名不标）
-    - 花括号必须配对；非日语行不允许出现 {}
-  - 输出：复制工具栏（原文/纯假名/带注音）+ ruby 歌词 + 复制数据 payload
+    - 花括号必须配对；非 ja/ko 语言行不允许出现 {}
+  - 语言取 lang 参数，缺省用页面 front matter 的 language（默认 ja）
+  - 输出：复制工具栏（原文/读音/带注音）+ ruby 歌词 + 复制数据 payload
 */}}
-{{ $lang := .Get "lang" | default "ja" }}
+{{ $lang := .Get "lang" | default (.Page.Params.language | default "ja") }}
 {{ $page := .Page }}
 
-{{/* .Inner 为含换行的原始文本；按行切分，空行保留（= 段落间隔） */}}
+{{/* .Inner 为含换行的原始文本；按行切分，空行保留（= 段落间隔）。
+     CRLF 兼容：不整表预处理；在「整行无注音 / 行尾 tail / 非 ja-ko 行」等
+     消费点用锚定正则剥离行尾 \r（判定用 TrimSpace，天然兼容）。
+     注：勿用 strings.TrimSuffix/TrimPrefix（Hugo 参数顺序与 Go 相反，易踩坑）。 */}}
 {{ $lines := split .Inner "\n" }}
 
-{{/* 去掉首尾的空行元素（由标签前后的换行产生）。
+{{/* 去掉首尾的空行元素（由标签前后的换行产生；含 CRLF 的 \r）。
      注意：Hugo 的 slice 函数是「按参数构造列表」，不是子切片；
      裁剪用 after（去掉前 N 个）与 first（取前 N 个）。 */}}
 {{ if gt (len $lines) 0 }}
-  {{ if eq (index $lines 0) "" }}{{ $lines = after 1 $lines }}{{ end }}
+  {{ if eq (strings.TrimSpace (index $lines 0)) "" }}{{ $lines = after 1 $lines }}{{ end }}
 {{ end }}
 {{ if gt (len $lines) 0 }}
   {{ $last := sub (len $lines) 1 }}
-  {{ if eq (index $lines $last) "" }}{{ $lines = first (sub (len $lines) 1) $lines }}{{ end }}
+  {{ if eq (strings.TrimSpace (index $lines $last)) "" }}{{ $lines = first (sub (len $lines) 1) $lines }}{{ end }}
 {{ end }}
 
 {{/* 三个复制模式的累积器 + 渲染行累积器 */}}
@@ -38,12 +42,26 @@
 {{ range $idx, $line := $lines }}
   {{ $lineNo := add $idx 1 }}
 
-  {{ if eq (strings.TrimSpace $line) "" }}
+  {{ $trimmed := strings.TrimSpace $line }}
+  {{ $isRomaji := and (strings.HasPrefix $trimmed "(") (strings.HasSuffix $trimmed ")") }}
+  {{ if eq $trimmed "" }}
     {{/* 空行 = 段落间隔 */}}
     {{ $p.Add "out" "" }}{{ $k.Add "out" "" }}{{ $u.Add "out" "" }}
     {{ $htmlRows.Add "rows" `<p class="lyric-line empty"></p>` }}
-  {{ else if eq $lang "ja" }}
-    {{/* ---- 日语行：解析 {注音} ---- */}}
+  {{ else if $isRomaji }}
+    {{/* ---- 罗马字注音行：(…) 整行内容，不是歌词正文 ----
+         不进复制文本（原文/读音/带注音）与搜索索引；
+         显示由 .romaji-line 样式控制，工具栏按钮可整块开关（.no-romaji） */}}
+    {{ $inner := replaceRE "^\\(" "" $trimmed }}
+    {{ $inner = replaceRE "\\)$" "" $inner }}
+    {{ if findRE "[{}]" $inner }}
+      {{ errorf "lyrics(%s) 第 %d 行：罗马字行内不允许注音标记 {}" $page.File.Path $lineNo }}
+    {{ end }}
+    {{ if ne $inner "" }}
+      {{ $htmlRows.Add "rows" (printf "<p class=\"romaji-line\">%s</p>" (htmlEscape $inner)) }}
+    {{ end }}
+  {{ else if or (eq $lang "ja") (eq $lang "ko") }}
+    {{/* ---- ja/ko 行：解析 {注音} ---- */}}
     {{ $anns := findRE "\\{[^}]*\\}" $line }}
     {{ $openN := len (findRE "\\{" $line) }}
     {{ $closeN := len (findRE "\\}" $line) }}
@@ -56,15 +74,25 @@
     {{ $segsScratch.Set "segs" slice }}
 
     {{ if eq $annN 0 }}
-      {{ $segsScratch.Add "segs" (dict "t" $line) }}
+      {{ $segsScratch.Add "segs" (dict "t" (replaceRE "\\r$" "" $line)) }}
     {{ else }}
       {{ $pieces := split (replaceRE "\\{[^}]*\\}" "␟" $line) "␟" }}
       {{ range $i, $ann := $anns }}
         {{ $piece := index $pieces $i }}
         {{ $inner := replaceRE "^\\{([^}]*)\\}$" "$1" $ann }}
-        {{ $kanaOK := findRE "^[\\x{3040}-\\x{309f}\\x{30a0}-\\x{30ff}]+$" $inner }}
-        {{ if not $kanaOK }}
-          {{ errorf "lyrics(%s) 第 %d 行：注音含非假名字符 {%s}" $page.File.Path $lineNo $inner }}
+        {{ $kanaOK := slice }}
+        {{ if eq $lang "ja" }}
+          {{/* 日语：注音必须是假名 */}}
+          {{ $kanaOK = findRE "^[\\x{3040}-\\x{309f}\\x{30a0}-\\x{30ff}]+$" $inner }}
+          {{ if not $kanaOK }}
+            {{ errorf "lyrics(%s) 第 %d 行：注音含非假名字符 {%s}" $page.File.Path $lineNo $inner }}
+          {{ end }}
+        {{ else }}
+          {{/* 韩语：读音必须是谚文 */}}
+          {{ $kanaOK = findRE "^[\\x{1100}-\\x{11ff}\\x{3130}-\\x{318f}\\x{ac00}-\\x{d7a3}]+$" $inner }}
+          {{ if not $kanaOK }}
+            {{ errorf "lyrics(%s) 第 %d 行：读音含非谚文字符 {%s}" $page.File.Path $lineNo $inner }}
+          {{ end }}
         {{ end }}
         {{ $runs := findRE "[\\x{3400}-\\x{4dbf}\\x{4e00}-\\x{9fff}\\x{f900}-\\x{faff}\\x{3005}]+$" $piece }}
         {{ if eq (len $runs) 0 }}
@@ -76,7 +104,7 @@
         {{ $segsScratch.Add "segs" (dict "t" $run "r" $inner) }}
       {{ end }}
       {{ $tail := index $pieces $annN }}
-      {{ if ne $tail "" }}{{ $segsScratch.Add "segs" (dict "t" $tail) }}{{ end }}
+      {{ if ne $tail "" }}{{ $segsScratch.Add "segs" (dict "t" (replaceRE "\\r$" "" $tail)) }}{{ end }}
     {{ end }}
 
     {{/* 疑似漏标汉字检查（仅提示不阻断） */}}
@@ -109,14 +137,15 @@
     {{ $k.Add "out" $kana }}
     {{ $u.Add "out" $ruby }}
   {{ else }}
-    {{/* ---- 非日语行：纯文本直出，禁止 {} ---- */}}
-    {{ if findRE "[{}]" $line }}
-      {{ errorf "lyrics(%s) 第 %d 行：非日语歌词不允许注音标记（{} 为保留语法）" $page.File.Path $lineNo }}
+    {{/* ---- 其他语言（zh/en 等）：纯文本直出，禁止 {} ---- */}}
+    {{ $lt := replaceRE "\\r$" "" $line }}
+    {{ if findRE "[{}]" $lt }}
+      {{ errorf "lyrics(%s) 第 %d 行：语言 %s 不支持注音标记（{} 为保留语法，仅 ja/ko 可用）" $page.File.Path $lineNo $lang }}
     {{ end }}
-    {{ $htmlRows.Add "rows" (printf "<p class=\"lyric-line\">%s</p>" (htmlEscape $line)) }}
-    {{ $p.Add "out" $line }}
-    {{ $k.Add "out" $line }}
-    {{ $u.Add "out" $line }}
+    {{ $htmlRows.Add "rows" (printf "<p class=\"lyric-line\">%s</p>" (htmlEscape $lt)) }}
+    {{ $p.Add "out" $lt }}
+    {{ $k.Add "out" $lt }}
+    {{ $u.Add "out" $lt }}
   {{ end }}
 {{ end }}
 
@@ -129,8 +158,9 @@
 <div class="toolbar">
   <span class="toolbar-label">复制歌词：</span>
   <button type="button" class="copy-btn" data-mode="plain">原文</button>
-  <button type="button" class="copy-btn" data-mode="kana">纯假名</button>
+  <button type="button" class="copy-btn" data-mode="kana">读音</button>
   <button type="button" class="copy-btn" data-mode="ruby">带注音</button>
+  <button type="button" class="romaji-toggle" aria-pressed="true">罗马字：开</button>
 </div>
 <div class="lyrics">
 {{ range $htmlRows.Get "rows" }}{{ safeHTML . }}{{ end }}
