@@ -1,0 +1,143 @@
+{{/*
+  lyrics: 歌词块 shortcode —— 在 Hugo 模板内解析 {注音}，零外部脚本。
+
+  用法（在歌曲页 index.md 正文中）：
+    {{< lyrics >}}
+    明日{あした}から
+    {{< /lyrics >}}
+
+  规则与校验（违反则 errorf 构建报错，带行号）：
+    - 注音只允许假名
+    - {注音} 必须紧跟在连续汉字串后面（整词连标，送假名不标）
+    - 花括号必须配对；非日语行不允许出现 {}
+  - 输出：复制工具栏（原文/纯假名/带注音）+ ruby 歌词 + 复制数据 payload
+*/}}
+{{ $lang := .Get "lang" | default "ja" }}
+{{ $page := .Page }}
+
+{{/* .Inner 为含换行的原始文本；按行切分，空行保留（= 段落间隔） */}}
+{{ $lines := split .Inner "\n" }}
+
+{{/* 去掉首尾的空行元素（由标签前后的换行产生）。
+     注意：Hugo 的 slice 函数是「按参数构造列表」，不是子切片；
+     裁剪用 after（去掉前 N 个）与 first（取前 N 个）。 */}}
+{{ if gt (len $lines) 0 }}
+  {{ if eq (index $lines 0) "" }}{{ $lines = after 1 $lines }}{{ end }}
+{{ end }}
+{{ if gt (len $lines) 0 }}
+  {{ $last := sub (len $lines) 1 }}
+  {{ if eq (index $lines $last) "" }}{{ $lines = first (sub (len $lines) 1) $lines }}{{ end }}
+{{ end }}
+
+{{/* 三个复制模式的累积器 + 渲染行累积器 */}}
+{{ $p := newScratch }}{{ $p.Set "out" slice }}
+{{ $k := newScratch }}{{ $k.Set "out" slice }}
+{{ $u := newScratch }}{{ $u.Set "out" slice }}
+{{ $htmlRows := newScratch }}{{ $htmlRows.Set "rows" slice }}
+
+{{ range $idx, $line := $lines }}
+  {{ $lineNo := add $idx 1 }}
+
+  {{ if eq (strings.TrimSpace $line) "" }}
+    {{/* 空行 = 段落间隔 */}}
+    {{ $p.Add "out" "" }}{{ $k.Add "out" "" }}{{ $u.Add "out" "" }}
+    {{ $htmlRows.Add "rows" `<p class="lyric-line empty"></p>` }}
+  {{ else if eq $lang "ja" }}
+    {{/* ---- 日语行：解析 {注音} ---- */}}
+    {{ $anns := findRE "\\{[^}]*\\}" $line }}
+    {{ $openN := len (findRE "\\{" $line) }}
+    {{ $closeN := len (findRE "\\}" $line) }}
+    {{ $annN := len $anns }}
+    {{ if or (ne $openN $annN) (ne $closeN $annN) }}
+      {{ errorf "lyrics(%s) 第 %d 行：花括号不配对 → %s" $page.File.Path $lineNo $line }}
+    {{ end }}
+
+    {{ $segsScratch := newScratch }}
+    {{ $segsScratch.Set "segs" slice }}
+
+    {{ if eq $annN 0 }}
+      {{ $segsScratch.Add "segs" (dict "t" $line) }}
+    {{ else }}
+      {{ $pieces := split (replaceRE "\\{[^}]*\\}" "␟" $line) "␟" }}
+      {{ range $i, $ann := $anns }}
+        {{ $piece := index $pieces $i }}
+        {{ $inner := replaceRE "^\\{([^}]*)\\}$" "$1" $ann }}
+        {{ $kanaOK := findRE "^[\\x{3040}-\\x{309f}\\x{30a0}-\\x{30ff}]+$" $inner }}
+        {{ if not $kanaOK }}
+          {{ errorf "lyrics(%s) 第 %d 行：注音含非假名字符 {%s}" $page.File.Path $lineNo $inner }}
+        {{ end }}
+        {{ $runs := findRE "[\\x{3400}-\\x{4dbf}\\x{4e00}-\\x{9fff}\\x{f900}-\\x{faff}\\x{3005}]+$" $piece }}
+        {{ if eq (len $runs) 0 }}
+          {{ errorf "lyrics(%s) 第 %d 行：{%s} 前面不是汉字（注音必须紧跟汉字）" $page.File.Path $lineNo $inner }}
+        {{ end }}
+        {{ $run := index $runs 0 }}
+        {{ $head := replaceRE "[\\x{3400}-\\x{4dbf}\\x{4e00}-\\x{9fff}\\x{f900}-\\x{faff}\\x{3005}]+$" "" $piece }}
+        {{ if ne $head "" }}{{ $segsScratch.Add "segs" (dict "t" $head) }}{{ end }}
+        {{ $segsScratch.Add "segs" (dict "t" $run "r" $inner) }}
+      {{ end }}
+      {{ $tail := index $pieces $annN }}
+      {{ if ne $tail "" }}{{ $segsScratch.Add "segs" (dict "t" $tail) }}{{ end }}
+    {{ end }}
+
+    {{/* 疑似漏标汉字检查（仅提示不阻断） */}}
+    {{ range $segsScratch.Get "segs" }}
+      {{ if and (not .r) (findRE "[\\x{3400}-\\x{4dbf}\\x{4e00}-\\x{9fff}\\x{f900}-\\x{faff}\\x{3005}]" .t) }}
+        {{ warnf "lyrics(%s) 第 %d 行疑似漏标汉字：%s" $page.File.Path $lineNo .t }}
+      {{ end }}
+    {{ end }}
+
+    {{/* 渲染行 + 三种复制文本 */}}
+    {{ $html := "" }}
+    {{ $plain := "" }}
+    {{ $kana := "" }}
+    {{ $ruby := "" }}
+    {{ range $segsScratch.Get "segs" }}
+      {{ if .r }}
+        {{ $html = printf "%s<ruby>%s<rt>%s</rt></ruby>" $html (htmlEscape .t) (htmlEscape .r) }}
+        {{ $plain = printf "%s%s" $plain .t }}
+        {{ $kana  = printf "%s%s" $kana .r }}
+        {{ $ruby  = printf "%s%s(%s)" $ruby .t .r }}
+      {{ else }}
+        {{ $html = printf "%s%s" $html (htmlEscape .t) }}
+        {{ $plain = printf "%s%s" $plain .t }}
+        {{ $kana  = printf "%s%s" $kana .t }}
+        {{ $ruby  = printf "%s%s" $ruby .t }}
+      {{ end }}
+    {{ end }}
+    {{ $htmlRows.Add "rows" (printf "<p class=\"lyric-line\">%s</p>" $html) }}
+    {{ $p.Add "out" $plain }}
+    {{ $k.Add "out" $kana }}
+    {{ $u.Add "out" $ruby }}
+  {{ else }}
+    {{/* ---- 非日语行：纯文本直出，禁止 {} ---- */}}
+    {{ if findRE "[{}]" $line }}
+      {{ errorf "lyrics(%s) 第 %d 行：非日语歌词不允许注音标记（{} 为保留语法）" $page.File.Path $lineNo }}
+    {{ end }}
+    {{ $htmlRows.Add "rows" (printf "<p class=\"lyric-line\">%s</p>" (htmlEscape $line)) }}
+    {{ $p.Add "out" $line }}
+    {{ $k.Add "out" $line }}
+    {{ $u.Add "out" $line }}
+  {{ end }}
+{{ end }}
+
+{{/* 把「纯原文 / 纯假名」全文存入页面 Store，供搜索索引（index.json）使用：
+     与复制按钮同一份段结构数据，保证索引是去注音后的文本 */}}
+{{ .Page.Store.Set "lyrics-plain" (delimit ($p.Get "out") "\n") }}
+{{ .Page.Store.Set "lyrics-kana" (delimit ($k.Get "out") "\n") }}
+
+{{/* ---- 输出：工具栏 + 歌词 + 复制数据 ---- */}}
+<div class="toolbar">
+  <span class="toolbar-label">复制歌词：</span>
+  <button type="button" class="copy-btn" data-mode="plain">原文</button>
+  <button type="button" class="copy-btn" data-mode="kana">纯假名</button>
+  <button type="button" class="copy-btn" data-mode="ruby">带注音</button>
+</div>
+<div class="lyrics">
+{{ range $htmlRows.Get "rows" }}{{ safeHTML . }}{{ end }}
+</div>
+<script type="application/json" id="copy-data">{{ dict
+  "plain" (delimit ($p.Get "out") "\n")
+  "kana"  (delimit ($k.Get "out") "\n")
+  "ruby"  (delimit ($u.Get "out") "\n")
+  | jsonify | safeJS }}</script>
+

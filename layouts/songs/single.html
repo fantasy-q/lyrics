@@ -1,0 +1,52 @@
+{{ define "main" }}
+<h1 class="song-title">{{ .Title }}{{ with .Params.romaji }} <span class="romaji">({{ . }})</span>{{ end }}</h1>
+<p class="song-meta">
+  {{ with .Params.artist }}<span class="song-artist">{{ . }}</span>{{ end }}
+  {{ with .Params.language }}<span class="song-lang">[{{ . }}]</span>{{ end }}
+</p>
+{{ with .Params.source_url }}<p class="song-source"><a href="{{ . }}" target="_blank" rel="noopener">来源链接</a></p>{{ end }}
+
+{{ .Content }}
+
+<script>
+(function () {
+  var payload = null;
+  var node = document.getElementById('copy-data');
+  if (node) {
+    try { payload = JSON.parse(node.textContent); } catch (e) { payload = null; }
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+  function showFeedback(btn) {
+    var old = btn.textContent;
+    btn.textContent = '已复制';
+    setTimeout(function () { btn.textContent = old; }, 1200);
+  }
+  var btns = document.querySelectorAll('.copy-btn');
+  Array.prototype.forEach.call(btns, function (btn) {
+    btn.addEventListener('click', function () {
+      var mode = btn.getAttribute('data-mode');
+      var text = (payload && payload[mode]) || '';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(
+          function () { showFeedback(btn); },
+          function () { fallbackCopy(text); showFeedback(btn); }
+        );
+      } else {
+        fallbackCopy(text);
+        showFeedback(btn);
+      }
+    });
+  });
+})();
+</script>
+{{ end }}

@@ -1,0 +1,11 @@
+# Hugo 站点配置
+baseURL = 'https://example.org/'   # TODO: 部署时改为实际域名，如 https://<user>.github.io/<repo>/
+title = '歌词库'
+locale = 'zh-CN'
+
+[params]
+  description = '多语言歌词展示（日语假名注音）'
+
+# 首页除 HTML 外再输出 index.json（全站搜索索引，由 layouts/index.json 生成）
+[outputs]
+  home = ["HTML", "JSON"]

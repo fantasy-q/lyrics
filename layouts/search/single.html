@@ -1,0 +1,82 @@
+{{ define "main" }}
+<h1>搜索歌词</h1>
+<p class="search-hint">支持题名 / 歌手 / 歌词原文与假名。输入即搜，无第三方依赖。</p>
+<input id="search-input" type="search" class="search-box"
+       placeholder="输入歌名、歌手或歌词…（如：未来 / 群れ / Alexandros）"
+       autocomplete="off">
+<p id="search-status" class="search-status"></p>
+<ul id="search-results" class="search-results"></ul>
+
+<script>
+(function () {
+  var INDEX_URL = {{ "index.json" | relURL }};
+  var input = document.getElementById('search-input');
+  var status = document.getElementById('search-status');
+  var resultsEl = document.getElementById('search-results');
+  var index = null;
+  var timer = null;
+
+  fetch(INDEX_URL).then(function (r) { return r.json(); }).then(function (data) {
+    index = data;
+    status.textContent = '已索引 ' + index.length + ' 首歌。输入关键词开始搜索。';
+  }).catch(function () {
+    status.textContent = '索引加载失败（index.json 未生成？）。';
+  });
+
+  function findLine(text, q) {
+    var i = text.indexOf(q);
+    if (i < 0) return '';
+    var a = text.lastIndexOf('\n', i) + 1;
+    var b = text.indexOf('\n', i);
+    if (b < 0) b = text.length;
+    return text.slice(a, b);
+  }
+
+  function render() {
+    var q = input.value.trim().toLowerCase();
+    resultsEl.innerHTML = '';
+    if (!index) { status.textContent = '索引加载中…'; return; }
+    if (!q) { status.textContent = '已索引 ' + index.length + ' 首歌。输入关键词开始搜索。'; return; }
+
+    var hits = [];
+    index.forEach(function (e) {
+      var hay = [e.title, e.romaji, e.artist, e.plain, e.kana]
+        .join(' ').toLowerCase();
+      if (hay.indexOf(q) >= 0) hits.push(e);
+    });
+    var shown = hits.slice(0, 50);
+    status.textContent = '命中 ' + hits.length + ' 首' +
+      (hits.length > 50 ? '（仅显示前 50）：' : '：');
+
+    shown.forEach(function (e) {
+      var li = document.createElement('li');
+      li.className = 'search-hit';
+      var head = document.createElement('a');
+      head.href = e.url;
+      head.className = 'search-hit-title';
+      head.textContent = e.title;
+      if (e.romaji) head.textContent += ' (' + e.romaji + ')';
+      if (e.artist) head.textContent += ' — ' + e.artist;
+      li.appendChild(head);
+
+      var line = findLine(e.plain, q) || findLine(e.kana, q);
+      if (line) {
+        var s = document.createElement('div');
+        s.className = 'search-snippet';
+        s.textContent = line;
+        li.appendChild(s);
+      }
+      resultsEl.appendChild(li);
+    });
+    if (hits.length === 0) {
+      status.textContent = '没有命中「' + input.value.trim() + '」。';
+    }
+  }
+
+  input.addEventListener('input', function () {
+    clearTimeout(timer);
+    timer = setTimeout(render, 150);
+  });
+})();
+</script>
+{{ end }}

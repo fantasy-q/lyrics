@@ -1,0 +1,22 @@
+{{- /* 全站搜索索引：index.json（home 的 JSON 输出）。
+      条目 = 元数据 + 去注音原文 + 假名全文，供 /search/ 页前端检索。 */ -}}
+{{- $entries := slice -}}
+{{- range site.RegularPages -}}
+  {{- if eq .Section "songs" -}}
+    {{- /* 先渲染该页正文（触发 lyrics shortcode 填充 Store），再取纯文本 */ -}}
+    {{- $discard := .Content -}}
+    {{- $plain := .Store.Get "lyrics-plain" -}}
+    {{- if $plain -}}
+      {{- $entries = $entries | append (dict
+        "title"    .Title
+        "romaji"   (.Params.romaji | default "")
+        "artist"   (.Params.artist | default "")
+        "language" (.Params.language | default "")
+        "url"      .RelPermalink
+        "plain"    $plain
+        "kana"     (.Store.Get "lyrics-kana" | default "")
+      ) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $entries | jsonify -}}

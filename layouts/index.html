@@ -1,0 +1,12 @@
+{{ define "main" }}
+<h1>歌曲一览</h1>
+<ul class="song-list">
+  {{ range site.RegularPages }}
+  <li>
+    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+    {{ with .Params.romaji }}<span class="romaji">({{ . }})</span>{{ end }}
+    {{ with .Params.artist }}— <span class="artist">{{ . }}</span>{{ end }}
+  </li>
+  {{ end }}
+</ul>
+{{ end }}

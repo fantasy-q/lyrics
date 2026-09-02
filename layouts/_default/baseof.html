@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ block "title" . }}{{ .Title }} · {{ site.Title }}{{ end }}</title>
+  <link rel="stylesheet" href="{{ "css/style.css" | relURL }}">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="{{ site.Home.RelPermalink }}">{{ site.Title }}</a>
+    <nav class="site-nav">
+      {{ with site.GetPage "/songs" }}<a href="{{ .RelPermalink }}">歌曲</a>{{ end }}
+      {{ with site.GetPage "/search" }}<a href="{{ .RelPermalink }}">搜索</a>{{ end }}
+    </nav>
+  </header>
+  <main class="container">
+    {{ block "main" . }}{{ end }}
+  </main>
+  <footer class="site-footer">
+    <p>歌词版权归原作者 / 唱片公司所有，本站仅作学习展示。</p>
+  </footer>
+</body>
+</html>
