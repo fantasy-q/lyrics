@@ -79,10 +79,15 @@ article > footer {
 
   & p {
     margin: 0 auto;
+    /* 关键：prose p 默认 line-height 1.75 会盖掉父级设置，
+       必须在此显式声明，给 ruby 注音留足半行距（数值可调 2.0~2.4） */
+    line-height: 2.2;
   }
 
   /* ---- ruby 注音（全站，render-passthrough 生成） ---- */
   & ruby {
+    ruby-align: center;
+    ruby-overhang: auto;
     ruby-position: over;
   }
 
