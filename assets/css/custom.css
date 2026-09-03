@@ -98,10 +98,12 @@ article > footer {
   }
 }
 
-/* ================= TEMP DEBUG —— 定位歌词上方间隔（用完删除） ================= */
-/* #single_header { outline: 2px solid red !important; }
-hr              { outline: 3px solid blue !important; }
-section         { outline: 2px solid green !important; }
-.article-col    { outline: 2px solid orange !important; }
-.article-content { outline: 2px solid purple !important; }
-.article-content > p { outline: 2px solid cyan !important; } */
+/* header 与歌词之间的分隔线：只留一条细线，去掉多余上下空间 */
+hr {
+  margin: 0 0 1.25rem;
+}
+
+/* 歌词区顶部不额外留白 */
+.article-content {
+  margin-top: 0 !important;
+}
