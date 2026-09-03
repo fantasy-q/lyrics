@@ -17,28 +17,59 @@ resources.Get "css/font.css" | minify -}}
 <link rel="stylesheet" href="{{ .RelPermalink }}" />
 {{- end -}}
 
-{{/* Debug outline 开关：顶栏按钮切换 html.debug（localStorage 记忆） */}}
+{{/* Debug outline 开关：注入到顶栏（搜索图标旁），纯图标按钮切换 html.debug（localStorage 记忆） */}}
 <script>
 (function () {
   var KEY = 'lyrics-debug-outline';
   var on = localStorage.getItem(KEY) === '1';
+
   function apply(v) {
     document.documentElement.classList.toggle('debug', v);
   }
   apply(on);
+
+  function icon(svg) {
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + svg + '</svg>';
+  }
+  var ICON_OFF = icon('<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'); // eye-off
+  var ICON_ON = icon('<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'); // eye
+
   document.addEventListener('DOMContentLoaded', function () {
     var btn = document.createElement('button');
     btn.type = 'button';
+    btn.id = 'debug-toggle';
     btn.className = 'debug-toggle';
     btn.title = '调试描边开关';
-    btn.textContent = on ? '调试：开' : '调试：关';
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.innerHTML =
+      '<span class="icon-off">' + ICON_OFF + '</span>' +
+      '<span class="icon-on">' + ICON_ON + '</span>';
+
     btn.addEventListener('click', function () {
       on = !on;
       localStorage.setItem(KEY, on ? '1' : '0');
       apply(on);
-      btn.textContent = on ? '调试：开' : '调试：关';
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
-    document.body.appendChild(btn);
+
+    function wire(b) {
+      b.addEventListener('click', function () {
+        on = !on;
+        localStorage.setItem(KEY, on ? '1' : '0');
+        apply(on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+
+    // 插入到顶栏搜索图标前（桌面 #search-button 与移动 #search-button-mobile 都插）
+    ['search-button', 'search-button-mobile'].forEach(function (id) {
+      var host = document.getElementById(id);
+      if (host) {
+        var b = btn.cloneNode(true);
+        wire(b);
+        host.parentNode.insertBefore(b, host);
+      }
+    });
   });
 })();
 </script>

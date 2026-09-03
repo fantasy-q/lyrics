@@ -109,29 +109,31 @@ html.debug .article-col    { outline: 2px solid orange !important; }
 html.debug .article-content { outline: 2px solid purple !important; }
 html.debug .article-content > p { outline: 2px solid cyan !important; }
 
-/* 顶栏调试开关按钮 */
+/* 顶栏调试开关按钮（纯图标：off=eye-off / on=eye） */
 .debug-toggle {
-  position: fixed;
-  top: 0.6rem;
-  right: 0.6rem;
-  z-index: 9999;
-  font: inherit;
-  font-size: 0.75rem;
-  padding: 0.15rem 0.6rem;
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  background: transparent;
-  opacity: 0.7;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem;
+  color: inherit;
   cursor: pointer;
+  background: transparent;
+  border: 0;
 }
 
-.debug-toggle:hover {
-  opacity: 1;
+.debug-toggle svg {
+  width: 1.15rem;
+  height: 1.15rem;
 }
 
-html.debug .debug-toggle {
-  background: #e11;
-  border-color: #e11;
-  color: #fff;
-  opacity: 0.95;
+.debug-toggle .icon-on {
+  display: none;
+}
+
+html.debug .debug-toggle .icon-off {
+  display: none;
+}
+
+html.debug .debug-toggle .icon-on {
+  display: inline-block;
 }
