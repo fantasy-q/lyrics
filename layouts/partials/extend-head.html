@@ -1,8 +1,18 @@
-{{/* Google 字体：Noto Serif 系（拉丁/日/韩/简中，所有权重 100–900）+ Montserrat。
-      浏览器按「实际用到的字重 + unicode 分片」按需下载；
-      Montserrat 想在哪儿用，在 custom.css 里写 font-family: "Montserrat", ... 即可。 */}}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+{{/* Google 字体：Noto Serif 系（拉丁/日/韩/简中，所有权重 100–900）+
+Montserrat。 浏览器按「实际用到的字重 + unicode 分片」按需下载； Montserrat
+想在哪儿用，在 custom.css 里写 font-family: "Montserrat", ... 即可。 */}}
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
   rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@100;200;300;400;500;600;700;800;900&family=Noto+Serif+JP:wght@100;200;300;400;500;600;700;800;900&family=Noto+Serif+KR:wght@100;200;300;400;500;600;700;800;900&family=Noto+Serif+SC:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap">
+  href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@100;200;300;400;500;600;700;800;900&family=Noto+Serif+JP:wght@100;200;300;400;500;600;700;800;900&family=Noto+Serif+KR:wght@100;200;300;400;500;600;700;800;900&family=Noto+Serif+SC:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap"
+/>
+<link
+  href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
+  rel="stylesheet"
+/>
+{{/* 挂载独立的 font.css：Blowfish 只自动加载 assets/css/custom.css， 其余 CSS
+需自行引用。此链接位于主题 CSS bundle 之后，覆盖顺序正确。 */}} {{- with
+resources.Get "css/font.css" | minify -}}
+<link rel="stylesheet" href="{{ .RelPermalink }}" />
+{{- end -}}

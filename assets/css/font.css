@@ -1,0 +1,29 @@
+/* ---- 衬线字体（Google Noto Serif；加载见 layouts/partials/extend-head.html）----
+   全站基准为衬线；页面 front matter language → article[data-lang] 切换主字体族 */
+body {
+  font-family:
+    "Noto Serif", "Noto Serif SC", "Noto Serif JP", "Noto Serif KR", ui-serif,
+    Georgia, serif;
+}
+
+article[data-lang="ja"] {
+  font-family: "Roboto Condensed", "Noto Serif JP", "Noto Serif", ui-serif, Georgia, serif;
+}
+
+article[data-lang="ko"] {
+  font-family: "Noto Serif KR", "Noto Serif", ui-serif, Georgia, serif;
+
+  & rt {
+    /* font-family: "Noto Sans KR", "Noto Sans"; */
+  }
+}
+
+article[data-lang="zh"] {
+  font-family: "Noto Serif SC", "Noto Serif", ui-serif, Georgia, serif;
+}
+
+article[data-lang="en"],
+article:not([data-lang]),
+article[data-lang=""] {
+  font-family: "Noto Serif", "Noto Serif SC", ui-serif, Georgia, serif;
+}

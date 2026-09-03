@@ -80,28 +80,36 @@
       {{ range $i, $ann := $anns }}
         {{ $piece := index $pieces $i }}
         {{ $inner := replaceRE "^\\{([^}]*)\\}$" "$1" $ann }}
-        {{ $kanaOK := slice }}
-        {{ if eq $lang "ja" }}
-          {{/* 日语：注音必须是假名 */}}
-          {{ $kanaOK = findRE "^[\\x{3040}-\\x{309f}\\x{30a0}-\\x{30ff}]+$" $inner }}
-          {{ if not $kanaOK }}
-            {{ errorf "lyrics(%s) 第 %d 行：注音含非假名字符 {%s}" $page.File.Path $lineNo $inner }}
+        {{/* 1) 前导是汉字串 → 读法标注（ja=假名 / ko=谚文） */}}
+        {{ $kanjiRuns := findRE "[\\x{3400}-\\x{4dbf}\\x{4e00}-\\x{9fff}\\x{f900}-\\x{faff}\\x{3005}]+$" $piece }}
+        {{ if gt (len $kanjiRuns) 0 }}
+          {{ $run := index $kanjiRuns 0 }}
+          {{ $head := replaceRE "[\\x{3400}-\\x{4dbf}\\x{4e00}-\\x{9fff}\\x{f900}-\\x{faff}\\x{3005}]+$" "" $piece }}
+          {{ if ne $head "" }}{{ $segsScratch.Add "segs" (dict "t" $head) }}{{ end }}
+          {{ if eq $lang "ja" }}
+            {{ $ok := findRE "^[\\x{3040}-\\x{309f}\\x{30a0}-\\x{30ff}]+$" $inner }}
+            {{ if not $ok }}{{ errorf "lyrics(%s) 第 %d 行：汉字注音须为假名，不能是 {%s}" $page.File.Path $lineNo $inner }}{{ end }}
+          {{ else }}
+            {{ $ok := findRE "^[\\x{1100}-\\x{11ff}\\x{3130}-\\x{318f}\\x{ac00}-\\x{d7a3}]+$" $inner }}
+            {{ if not $ok }}{{ errorf "lyrics(%s) 第 %d 行：汉字读音须为谚文，不能是 {%s}" $page.File.Path $lineNo $inner }}{{ end }}
           {{ end }}
+          {{ $segsScratch.Add "segs" (dict "t" $run "r" $inner) }}
         {{ else }}
-          {{/* 韩语：读音必须是谚文 */}}
-          {{ $kanaOK = findRE "^[\\x{1100}-\\x{11ff}\\x{3130}-\\x{318f}\\x{ac00}-\\x{d7a3}]+$" $inner }}
-          {{ if not $kanaOK }}
-            {{ errorf "lyrics(%s) 第 %d 行：读音含非谚文字符 {%s}" $page.File.Path $lineNo $inner }}
+          {{/* 2) 无汉字串：ja 允许「片假名 + 英文原词」标注（クリア{Clear}） */}}
+          {{ $kataRuns := findRE "[\\x{30a0}-\\x{30ff}]+$" $piece }}
+          {{ if and (eq $lang "ja") (gt (len $kataRuns) 0) }}
+            {{ $glossOK := findRE "^[A-Za-z'’ -]+$" $inner }}
+            {{ if not $glossOK }}
+              {{ errorf "lyrics(%s) 第 %d 行：片假名上方只能标英文原词（如 クリア{Clear}），不能是 {%s}" $page.File.Path $lineNo $inner }}
+            {{ end }}
+            {{ $run := index $kataRuns 0 }}
+            {{ $head := replaceRE "[\\x{30a0}-\\x{30ff}]+$" "" $piece }}
+            {{ if ne $head "" }}{{ $segsScratch.Add "segs" (dict "t" $head) }}{{ end }}
+            {{ $segsScratch.Add "segs" (dict "t" $run "g" $inner) }}
+          {{ else }}
+            {{ errorf "lyrics(%s) 第 %d 行：{%s} 前面须为汉字（ja/ko 读法标注）或片假名（ja 标英文原词）" $page.File.Path $lineNo $inner }}
           {{ end }}
         {{ end }}
-        {{ $runs := findRE "[\\x{3400}-\\x{4dbf}\\x{4e00}-\\x{9fff}\\x{f900}-\\x{faff}\\x{3005}]+$" $piece }}
-        {{ if eq (len $runs) 0 }}
-          {{ errorf "lyrics(%s) 第 %d 行：{%s} 前面不是汉字（注音必须紧跟汉字）" $page.File.Path $lineNo $inner }}
-        {{ end }}
-        {{ $run := index $runs 0 }}
-        {{ $head := replaceRE "[\\x{3400}-\\x{4dbf}\\x{4e00}-\\x{9fff}\\x{f900}-\\x{faff}\\x{3005}]+$" "" $piece }}
-        {{ if ne $head "" }}{{ $segsScratch.Add "segs" (dict "t" $head) }}{{ end }}
-        {{ $segsScratch.Add "segs" (dict "t" $run "r" $inner) }}
       {{ end }}
       {{ $tail := index $pieces $annN }}
       {{ if ne $tail "" }}{{ $segsScratch.Add "segs" (dict "t" (replaceRE "\\r$" "" $tail)) }}{{ end }}
@@ -120,7 +128,13 @@
     {{ $kana := "" }}
     {{ $ruby := "" }}
     {{ range $segsScratch.Get "segs" }}
-      {{ if .r }}
+      {{ if .g }}
+        {{/* 片假名 + 英文原词（クリア{Clear}）：读音/原文复制都不含英文原词 */}}
+        {{ $html = printf "%s<ruby>%s<rt class=\"rt-gloss\">%s</rt></ruby>" $html (htmlEscape .t) (htmlEscape .g) }}
+        {{ $plain = printf "%s%s" $plain .t }}
+        {{ $kana  = printf "%s%s" $kana .t }}
+        {{ $ruby  = printf "%s%s(%s)" $ruby .t .g }}
+      {{ else if .r }}
         {{ $html = printf "%s<ruby>%s<rt>%s</rt></ruby>" $html (htmlEscape .t) (htmlEscape .r) }}
         {{ $plain = printf "%s%s" $plain .t }}
         {{ $kana  = printf "%s%s" $kana .r }}
@@ -132,6 +146,12 @@
         {{ $ruby  = printf "%s%s" $ruby .t }}
       {{ end }}
     {{ end }}
+    {{/* 下划线约定 __文字__ → <u>文字</u>（$html 已做 HTML 转义，可安全插入）；
+          三种复制文本中去掉 __ 标记 */}}
+    {{ $html = replaceRE "__([^_]*?)__" "<u>$1</u>" $html }}
+    {{ $plain = replaceRE "__" "" $plain }}
+    {{ $kana  = replaceRE "__" "" $kana }}
+    {{ $ruby  = replaceRE "__" "" $ruby }}
     {{ $htmlRows.Add "rows" (printf "<p class=\"lyric-line\">%s</p>" $html) }}
     {{ $p.Add "out" $plain }}
     {{ $k.Add "out" $kana }}
@@ -142,10 +162,13 @@
     {{ if findRE "[{}]" $lt }}
       {{ errorf "lyrics(%s) 第 %d 行：语言 %s 不支持注音标记（{} 为保留语法，仅 ja/ko 可用）" $page.File.Path $lineNo $lang }}
     {{ end }}
-    {{ $htmlRows.Add "rows" (printf "<p class=\"lyric-line\">%s</p>" (htmlEscape $lt)) }}
-    {{ $p.Add "out" $lt }}
-    {{ $k.Add "out" $lt }}
-    {{ $u.Add "out" $lt }}
+    {{ $ltEsc := htmlEscape $lt }}
+    {{ $ltHtml := replaceRE "__([^_]*?)__" "<u>$1</u>" $ltEsc }}
+    {{ $htmlRows.Add "rows" (printf "<p class=\"lyric-line\">%s</p>" $ltHtml) }}
+    {{ $ltC := replaceRE "__" "" $lt }}
+    {{ $p.Add "out" $ltC }}
+    {{ $k.Add "out" $ltC }}
+    {{ $u.Add "out" $ltC }}
   {{ end }}
 {{ end }}
 
