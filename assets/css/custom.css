@@ -43,8 +43,11 @@ body {
   }
 }
 #single_header {
+  & h1 {
+    font-size: 4em;
+  }
   /* ---- 歌曲页 header：artist（byline）与 links ---- */
-  div {
+  & div {
     display: flex;
     justify-content: space-evenly;
     flex-wrap: nowrap;
@@ -98,12 +101,37 @@ article > footer {
   }
 }
 
-/* header 与歌词之间的分隔线：只留一条细线，去掉多余上下空间 */
-hr {
-  margin: 0 0 1.25rem;
+/* ============ Debug outline（顶栏开关控制；html.debug 时生效） ============ */
+html.debug #single_header { outline: 2px solid red !important; }
+html.debug hr              { outline: 3px solid blue !important; }
+html.debug section         { outline: 2px solid green !important; }
+html.debug .article-col    { outline: 2px solid orange !important; }
+html.debug .article-content { outline: 2px solid purple !important; }
+html.debug .article-content > p { outline: 2px solid cyan !important; }
+
+/* 顶栏调试开关按钮 */
+.debug-toggle {
+  position: fixed;
+  top: 0.6rem;
+  right: 0.6rem;
+  z-index: 9999;
+  font: inherit;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  opacity: 0.7;
+  cursor: pointer;
 }
 
-/* 歌词区顶部不额外留白 */
-.article-content {
-  margin-top: 0 !important;
+.debug-toggle:hover {
+  opacity: 1;
+}
+
+html.debug .debug-toggle {
+  background: #e11;
+  border-color: #e11;
+  color: #fff;
+  opacity: 0.95;
 }

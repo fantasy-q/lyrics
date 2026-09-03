@@ -16,3 +16,29 @@ Montserrat。 浏览器按「实际用到的字重 + unicode 分片」按需下�
 resources.Get "css/font.css" | minify -}}
 <link rel="stylesheet" href="{{ .RelPermalink }}" />
 {{- end -}}
+
+{{/* Debug outline 开关：顶栏按钮切换 html.debug（localStorage 记忆） */}}
+<script>
+(function () {
+  var KEY = 'lyrics-debug-outline';
+  var on = localStorage.getItem(KEY) === '1';
+  function apply(v) {
+    document.documentElement.classList.toggle('debug', v);
+  }
+  apply(on);
+  document.addEventListener('DOMContentLoaded', function () {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'debug-toggle';
+    btn.title = '调试描边开关';
+    btn.textContent = on ? '调试：开' : '调试：关';
+    btn.addEventListener('click', function () {
+      on = !on;
+      localStorage.setItem(KEY, on ? '1' : '0');
+      apply(on);
+      btn.textContent = on ? '调试：开' : '调试：关';
+    });
+    document.body.appendChild(btn);
+  });
+})();
+</script>
