@@ -73,13 +73,12 @@
           </div>
         </div>
       {{ end }}
-
-
+      
       <div class="min-w-0 min-h-0 max-w-fit article-col">
         {{ partial "series/series.html" . }}
         <div class="article-content max-w-prose mb-20">
-          {{ .Content }}
-          {{ $defaultReplyByEmail := site.Params.replyByEmail }}
+          {{- .Content -}}
+          {{- $defaultReplyByEmail := site.Params.replyByEmail -}}
           {{ $replyByEmail := default $defaultReplyByEmail .Params.replyByEmail }}
           {{ if $replyByEmail }}
             {{ $replySubject := i18n "article.reply_to" (dict "Title" .Title) | default (printf "Reply to %s" .Title) }}
