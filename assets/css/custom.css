@@ -1,7 +1,8 @@
 /* ============================================================
-   歌词站 custom.css
+   歌词站 custom.css（CSS Nesting 嵌套写法）
    - 歌词为 Markdown + {文字|注音}（render-passthrough.html 渲染为 ruby）
    - 字体规则在 assets/css/font.css（extend-head.html 挂载）
+   - 注意：嵌套内裸元素选择器须写 & li / & a 形式
    ============================================================ */
 
 body {
@@ -19,30 +20,30 @@ body {
   padding: 0;
   display: grid;
   gap: 0.9rem;
+
+  & li {
+    border-bottom: 1px solid rgba(128, 128, 128, 0.25);
+    padding-bottom: 0.9rem;
+  }
+
+  & a {
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .romaji,
+  & .artist {
+    font-weight: 400;
+    opacity: 0.65;
+    margin-left: 0.15em;
+  }
 }
 
-.song-list li {
-  border-bottom: 1px solid rgba(128, 128, 128, 0.25);
-  padding-bottom: 0.9rem;
-}
-
-.song-list a {
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.song-list a:hover {
-  text-decoration: underline;
-}
-
-.song-list .romaji,
-.song-list .artist {
-  font-weight: 400;
-  opacity: 0.65;
-  margin-left: 0.15em;
-}
-
-/* 罗马字题名（列表中出现）用 Montserrat/Roboto Condensed */
+/* 罗马字题名（列表中出现）用 Roboto Condensed / Montserrat */
 .romaji {
   font-family: "Roboto Condensed", "Montserrat", "Noto Serif", ui-serif,
     Georgia, serif;
