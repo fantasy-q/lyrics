@@ -12,20 +12,24 @@ by。 主题升级时若结构大改需对照；功能面与我们配置（无 f
       Last Updated: {{ now | time.Format "2006-01-02 15:04:05 -07:00" }}
     </p>
     <p class="text-xs text-neutral-500 dark:text-neutral-400">
-      {{ $hugo := printf `<a
-        class="hover:underline hover:decoration-primary-400 hover:text-primary-500"
-        href="https://gohugo.io/"
-        target="_blank"
-        rel="noopener noreferrer"
-        >Hugo</a
-      >` }} {{ $blowfish := printf `<a
-        class="hover:underline hover:decoration-primary-400 hover:text-primary-500"
-        href="https://blowfish.page/"
-        target="_blank"
-        rel="noopener noreferrer"
-        >Blowfish</a
-      >` }} {{ i18n "footer.powered_by" (dict "Hugo" $hugo "Theme" $blowfish) |
-      safeHTML }}
+      <span>
+        Powered by
+        <a
+          class="hover:underline hover:decoration-primary-400 hover:text-primary-500"
+          href="https://gohugo.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Hugo</a
+        >
+        &amp;
+        <a
+          class="hover:underline hover:decoration-primary-400 hover:text-primary-500"
+          href="https://blowfish.page/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Blowfish</a
+        >
+      </span>
     </p>
   </div>
 </footer>
