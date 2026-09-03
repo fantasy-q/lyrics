@@ -21,8 +21,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Blowfish theme (not committed)
-        run: git clone --depth 1 https://github.com/nunocoracao/blowfish.git themes/blowfish
+      - name: Install Blowfish theme (pinned commit)
+        # 与本地 themes/blowfish 完全同一提交，避免 CI 与本地漂移
+        run: |
+          git clone https://github.com/nunocoracao/blowfish.git themes/blowfish
+          git -C themes/blowfish checkout 7ab6a75d42e0131f51a28fd361656e7a89e0a8d6
 
       - name: Setup Pages
         id: pages

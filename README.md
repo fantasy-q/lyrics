@@ -7,7 +7,10 @@
 ## 快速开始
 
 ```powershell
-git clone --depth 1 https://github.com/nunocoracao/blowfish.git themes/blowfish  # 未装主题时
+# 安装 Blowfish（固定提交，与 CI 完全一致；见「版本同步」）
+git clone https://github.com/nunocoracao/blowfish.git themes/blowfish
+git -C themes/blowfish checkout 7ab6a75d42e0131f51a28fd361656e7a89e0a8d6
+
 hugo server          # http://localhost:1313
 hugo --gc --minify   # 生产构建 → public/
 ```
@@ -63,7 +66,11 @@ hugo --gc --minify   # 生产构建 → public/
 - 搜索（Ctrl+K）：搜题名/歌手/原文/注音。
 - 深浅模式、响应式：Blowfish 自带。
 
-## 主题更新
+## 版本同步（本地 = CI）
 
-Blowfish 未固定版本（clone 默认分支）：删掉 `themes/blowfish` 重新 clone。
-`layouts/_default/single.html` 为主题拷贝+少量修改，升级后需同步（或删除回退主题默认，代价是失去 data-lang 字体切换与居中）。
+- **Hugo**：本地与 CI 都用 **0.165.0 extended**（workflow 里 `peaceiris/actions-hugo` 固定 `hugo-version: "0.165.0"`）。
+- **Blowfish**：本地与 CI 都钉在提交 **`7ab6a75`**（`.github/workflows/deploy.yml` 的 checkout 行与本 README 的安装命令必须一致）。
+- **更新主题（两步一起做，否则漂移）**：
+  1. 本地：`Remove-Item -Recurse -Force themes\blowfish`，再按「快速开始」克隆到新提交；
+  2. 把新提交的**完整 sha** 同步替换到 `.github/workflows/deploy.yml` 与本 README。
+- 主题升级后检查 `layouts/_default/single.html`（自写精简版）是否仍兼容；`themes/` 不入库。
