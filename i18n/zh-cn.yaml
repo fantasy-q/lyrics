@@ -1,0 +1,4 @@
+# 站点层 zh-cn i18n 覆盖（优先于主题同语言翻译）
+# 让「Powered by」保持英文
+footer:
+  powered_by: "Powered by {{ .Hugo }} &amp; {{ .Theme }}"
