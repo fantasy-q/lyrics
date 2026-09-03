@@ -47,6 +47,14 @@ hugo --gc --minify   # 生产构建 → public/
 ## 加一首歌
 
 1. 新建 `content/songs/<slug>.md`：YAML front matter（title/romaji/artist/language/description）+ 正文歌词；
+   `links` 用列表形式（显示名与 URL 都按原样）：
+   ```yaml
+   links:
+     - name: 哔哩哔哩
+       url: https://www.bilibili.com/video/xxx
+     - name: Youtube
+       url: https://www.youtube.com
+   ```
 2. `hugo server` 预览 → 提交推送，CI 自动部署。
 
 ## 页面功能

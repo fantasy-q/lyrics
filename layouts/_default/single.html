@@ -25,29 +25,36 @@
       {{ if .Params.showBreadcrumbs | default (site.Params.article.showBreadcrumbs | default false) }}
         {{ partial "breadcrumbs.html" . }}
       {{ end }}
+
       <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
         {{ .Title | emojify }}
       </h1>
-      <div class="mt-1 mb-6 text-base text-neutral-500 dark:text-neutral-400 print:hidden">
-        {{ partial "article-meta/basic.html" (dict "context" . "scope" "single") }}
-      </div>
-      {{ with .Params.artist }}
-        <div class="song-byline">{{ . }}{{ with $.Params.romaji }} <span class="song-byline-romaji">({{ . }})</span>{{ end }}</div>
+
+      {{ with $.Params.romaji }}
+          <span class="song-byline-romaji">({{ . }})</span>
       {{ end }}
+
+      {{ with .Params.artist }}
+        <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
+          {{ . }}    
+        </h1>
+      {{ end }}
+      
       {{ with .Params.links }}
-        <div class="song-links">
-          {{ range $name, $url := . }}
-            <a href="{{ $url }}" target="_blank" rel="noopener">{{ $name }}</a>
+        <div class="song-links mt-0 font-extrabold text-neutral-900 dark:text-neutral">
+          {{ range . }}
+            <a href="{{ .url }}" target="_blank" rel="noopener">{{ .name }}</a>
           {{ end }}
         </div>
-      {{ else }}
-        {{ with .Params.source_url }}
-          <div class="song-links"><a href="{{ . }}" target="_blank" rel="noopener">来源链接</a></div>
-        {{ end }}
       {{ end }}
-      {{ if not (.Params.showAuthorBottom | default (site.Params.article.showAuthorBottom | default false)) }}
+
+      {{/*  {{ if not (.Params.showAuthorBottom | default (site.Params.article.showAuthorBottom | default false)) }}
         {{ template "SingleAuthor" . }}
-      {{ end }}
+      {{ end }}  */}}
+
+      {{/*  <div class="mt-1 mb-6 text-base text-neutral-500 dark:text-neutral-400 print:hidden">
+        {{ partial "article-meta/basic.html" (dict "context" . "scope" "single") }}
+      </div>  */}}
     </header>
     
     <hr>

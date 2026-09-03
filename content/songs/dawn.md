@@ -5,8 +5,10 @@ artist: Stellar Blade
 description: "Stellar Blade — Dawn"
 language: ko
 links:
-  Bilibili: https://www.bilibili.com/video/BV14NynB1Ecz
-  Youtube: https://www.youtube.com
+  - name: 哔哩哔哩
+    url: https://www.bilibili.com/video/BV14NynB1Ecz
+  - name: Youtube
+    url: https://www.youtube.com
 ---
 (chang bakk-e nam gyeo jin gi eo gi)
 {窓|창}{外|밖}에{殘|남}겨진{記憶|기억}이
