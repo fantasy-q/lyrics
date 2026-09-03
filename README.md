@@ -21,7 +21,7 @@ hugo --gc --minify   # 生产构建 → public/
 | `config/_default/*.toml` | Blowfish 配置；`markup.toml` 注册行内 passthrough `{ }` |
 | `layouts/_markup/render-passthrough.html` | **核心**：`{文字|注音}` → `<ruby>`（按第一个 `\|` 切分，无 `\|` 则字面输出） |
 | `content/songs/<slug>.md` | 每歌一页：YAML front matter + Markdown 歌词正文 |
-| `layouts/_default/single.html` | 主题 single 拷贝：给 `<article>` 加 `data-lang`（按语言切字体）+ `article-col`（居中） |
+| `layouts/_default/single.html` | 歌曲页模板（自写精简版，不再整份拷贝主题）：`data-lang`（按语言切字体）+ header（ruby 标题/artist/links）+ 歌词正文 |
 | `layouts/index.json` | 搜索索引（覆盖主题版：去注音原文 + 注音文本） |
 | `layouts/index.html` / `_default/list.html` | 首页与歌曲列表 |
 | `assets/css/custom.css` | 布局/歌词/居中样式（Blowfish 自动加载） |
