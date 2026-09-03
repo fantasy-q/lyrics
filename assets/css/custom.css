@@ -97,3 +97,11 @@ article > footer {
     font-weight: 900;
   }
 }
+
+/* ================= TEMP DEBUG —— 定位歌词上方间隔（用完删除） ================= */
+/* #single_header { outline: 2px solid red !important; }
+hr              { outline: 3px solid blue !important; }
+section         { outline: 2px solid green !important; }
+.article-col    { outline: 2px solid orange !important; }
+.article-content { outline: 2px solid purple !important; }
+.article-content > p { outline: 2px solid cyan !important; } */
