@@ -35,29 +35,12 @@ body {
     }
   }
 
-  .romaji,
+  & .romaji,
   & .artist {
     font-weight: 400;
     opacity: 0.65;
     margin-left: 0.15em;
   }
-}
-
-/* 罗马字题名（列表中出现）用 Roboto Condensed / Montserrat */
-.romaji {
-  font-family: "Roboto Condensed", "Montserrat", "Noto Serif", ui-serif,
-    Georgia, serif;
-}
-
-/* ---- ruby 注音（全站，render-passthrough 生成） ---- */
-ruby {
-  ruby-position: over;
-}
-
-rt {
-  font-size: 0.6em;
-  opacity: 0.8;
-  font-weight: 900;
 }
 
 /* ---- 歌曲页排版：完全居中 + 歌词逐行 ---- */
@@ -74,5 +57,46 @@ article > footer {
   /* 行高留足，避免 ruby 注音与相邻行重叠 */
   line-height: 2.4;
   /* 歌词字号（原 .lyric-line 的大字意向） */
-  font-size: 1.25rem;
+  font-size: 2em;
+  font-weight: 900;
+
+  & p {
+    margin: 0 auto;
+  }
+
+  /* ---- ruby 注音（全站，render-passthrough 生成） ---- */
+  & ruby {
+    ruby-position: over;
+  }
+
+  & rt {
+    font-size: 0.6em;
+    opacity: 0.8;
+    font-weight: 900;
+  }
+}
+
+/* ---- 歌曲页 header：artist（byline）与 links ---- */
+.song-byline {
+  opacity: 0.8;
+  font-size: 0.95em;
+  margin: -0.5em 0 0.6em;
+}
+
+.song-links {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0 0 1rem;
+}
+
+.song-links a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  opacity: 0.7;
+}
+
+.song-links a:hover {
+  opacity: 1;
 }
