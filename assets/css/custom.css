@@ -42,6 +42,23 @@ body {
     margin-left: 0.15em;
   }
 }
+#single_header {
+  /* ---- 歌曲页 header：artist（byline）与 links ---- */
+  div {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: nowrap;
+
+    & a {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
 
 /* ---- 歌曲页排版：完全居中 + 歌词逐行 ---- */
 #single_header,
@@ -55,7 +72,7 @@ article > footer {
   /* Markdown 软换行按行显示（歌词一行一句，无需硬换行标记） */
   white-space: pre-line;
   /* 行高留足，避免 ruby 注音与相邻行重叠 */
-  line-height: 2.4;
+  line-height: 2;
   /* 歌词字号（原 .lyric-line 的大字意向） */
   font-size: 2em;
   font-weight: 900;
@@ -74,29 +91,4 @@ article > footer {
     opacity: 0.8;
     font-weight: 900;
   }
-}
-
-/* ---- 歌曲页 header：artist（byline）与 links ---- */
-.song-byline {
-  opacity: 0.8;
-  font-size: 0.95em;
-  margin: -0.5em 0 0.6em;
-}
-
-.song-links {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin: 0 0 1rem;
-}
-
-.song-links a {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  opacity: 0.7;
-}
-
-.song-links a:hover {
-  opacity: 1;
 }

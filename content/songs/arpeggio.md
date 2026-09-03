@@ -4,7 +4,11 @@ romaji: Arpeggio
 artist: "[Alexandros]"
 description: "[Alexandros] — Arpeggio"
 language: ja
-source_url: ""
+links:
+  - name: 哔哩哔哩
+    url: https://www.bilibili.com/video/BV1d5wvz2Et1
+  - name: Youtube
+    url: https://www.youtube.com/watch?v=uHxwO3mGpLU
 ---
 I'm sorry　{上手|うま}く{笑|わら}えないよ
 {貴方|あなた}の{喜|よろこ}び　{分|わ}からないのに

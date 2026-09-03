@@ -27,34 +27,35 @@
       {{ end }}
 
       <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
-        {{ .Title | emojify }}
+        <ruby>
+          {{ .Title | emojify }}
+          {{ with $.Params.romaji }}
+            <rt class="">{{ . }}</rt>
+          {{ end }}
+        </ruby>
       </h1>
 
-      {{ with $.Params.romaji }}
-          <span class="song-byline-romaji">({{ . }})</span>
-      {{ end }}
-
       {{ with .Params.artist }}
-        <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
+        <h2 class="mt-4 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
           {{ . }}    
-        </h1>
+        </h2>
       {{ end }}
       
       {{ with .Params.links }}
-        <div class="song-links mt-0 font-extrabold text-neutral-900 dark:text-neutral">
+        <div class="mt-6 font-extrabold text-neutral-900 dark:text-neutral">
           {{ range . }}
-            <a href="{{ .url }}" target="_blank" rel="noopener">{{ .name }}</a>
+            <a href="{{ .url }}" target="_blank" rel="noopener">&ensp;{{ .name }}&ensp;</a>
           {{ end }}
         </div>
       {{ end }}
 
-      {{/*  {{ if not (.Params.showAuthorBottom | default (site.Params.article.showAuthorBottom | default false)) }}
+      {{ if not (.Params.showAuthorBottom | default (site.Params.article.showAuthorBottom | default false)) }}
         {{ template "SingleAuthor" . }}
-      {{ end }}  */}}
+      {{ end }}
 
-      {{/*  <div class="mt-1 mb-6 text-base text-neutral-500 dark:text-neutral-400 print:hidden">
+      <div class="mt-1 mb-6 text-base text-neutral-500 dark:text-neutral-400 print:hidden">
         {{ partial "article-meta/basic.html" (dict "context" . "scope" "single") }}
-      </div>  */}}
+      </div>
     </header>
     
     <hr>
@@ -114,7 +115,7 @@
       {{ partial "article-comments.html" . }}
     </footer>
   </article>
-{{ end }}
+  {{ end }}
 
 {{ define "SingleAuthor" }}
   {{ $authorsData := hugo.Data.authors }}
