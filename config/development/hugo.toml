@@ -1,3 +1,0 @@
-# 开发环境覆盖：hugo server 自动使用 development 环境
-# 把 baseURL 指回 localhost 根路径，避免资源带上 /lyrics/ 子路径前缀
-baseURL = "http://localhost:1313/"
