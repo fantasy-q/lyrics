@@ -12,8 +12,11 @@ Montserrat。 浏览器按「实际用到的字重 + unicode 分片」按需下�
   rel="stylesheet"
 />
 {{/* 挂载独立的 font.css：Blowfish 只自动加载 assets/css/custom.css， 其余 CSS
-需自行引用。此链接位于主题 CSS bundle 之后，覆盖顺序正确。 */}} {{- with
-resources.Get "css/font.css" | minify -}}
+需自行引用。此链接位于主题 CSS bundle 之后，覆盖顺序正确。 */}} 
+{{- with resources.Get "css/font.css" | minify -}}
+<link rel="stylesheet" href="{{ .RelPermalink }}" />
+{{- end -}}
+{{- with resources.Get "css/debug.css" | minify -}}
 <link rel="stylesheet" href="{{ .RelPermalink }}" />
 {{- end -}}
 

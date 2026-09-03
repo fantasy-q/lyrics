@@ -81,10 +81,10 @@ article > footer {
   
   & p {
     white-space: pre-line;
-    margin: 1em auto;
+    margin: 2em auto;
     /* 关键：prose p 默认 line-height 1.75 会盖掉父级设置，
        必须在此显式声明，给 ruby 注音留足半行距（数值可调 2.0~2.4） */
-    line-height: 2.2;
+    line-height: 2;
   }
 
   /* ---- ruby 注音（全站，render-passthrough 生成） ---- */
@@ -100,11 +100,3 @@ article > footer {
     font-weight: 900;
   }
 }
-
-/* ============ Debug outline（顶栏开关控制；html.debug 时生效） ============ */
-html.debug #single_header { outline: 2px solid red !important; }
-html.debug hr              { outline: 3px solid blue !important; }
-html.debug section         { outline: 2px solid green !important; }
-html.debug .article-col    { outline: 2px solid orange !important; }
-html.debug .article-content { outline: 2px solid purple !important; }
-html.debug .article-content > p { outline: 2px solid cyan !important; }
