@@ -137,3 +137,10 @@ html.debug .debug-toggle .icon-off {
 html.debug .debug-toggle .icon-on {
   display: inline-block;
 }
+
+/* 页脚构建时间 */
+.build-info {
+  margin: 0.4rem 0 0;
+  font-size: 0.8em;
+  opacity: 0.6;
+}
