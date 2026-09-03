@@ -1,0 +1,10 @@
+{{/* Passthrough 渲染钩子：{文字|注音} → <ruby>
+      - 以第一个 | 切分：左侧为正文（任意字符），右侧为注音（任意字符）
+      - 无 | 的内容按字面转义输出（不报错）
+      - 输出为 HTML，需自行 htmlEscape 文本部分 */}}
+{{- $parts := split .Inner "|" -}}
+{{- if gt (len $parts) 1 -}}
+<ruby>{{ index $parts 0 | htmlEscape }}<rt>{{ delimit (after 1 $parts) "|" | htmlEscape }}</rt></ruby>
+{{- else -}}
+{{- .Inner | htmlEscape -}}
+{{- end -}}

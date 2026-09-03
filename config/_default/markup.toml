@@ -1,0 +1,27 @@
+# -- Markup --
+# 复制自 Blowfish 主题默认（goldmark unsafe / attribute / math passthrough 等）
+# 并新增：行内 passthrough 定界符 { } 用于歌词 ruby（{文字|注音}）
+
+[goldmark]
+  [goldmark.parser]
+    wrapStandAloneImageWithinParagraph = false
+
+    [goldmark.parser.attribute]
+      block = true
+
+  [goldmark.renderer]
+    unsafe = true
+
+  [goldmark.extensions]
+    [goldmark.extensions.passthrough]
+      enable = true
+      [goldmark.extensions.passthrough.delimiters]
+        block = [['\[', '\]'], ['$$', '$$']]
+        inline = [['\(', '\)'], ['{', '}']]
+
+[highlight]
+  noClasses = false
+
+[tableOfContents]
+  startLevel = 2
+  endLevel = 4

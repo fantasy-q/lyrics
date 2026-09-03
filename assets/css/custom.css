@@ -1,9 +1,14 @@
-/* ---- 歌词显示（Blowfish custom css，assets/css/custom.css 自动加载）---- */
+/* ============================================================
+   歌词站 custom.css
+   - 歌词为 Markdown + {文字|注音}（render-passthrough.html 渲染为 ruby）
+   - 字体规则在 assets/css/font.css（extend-head.html 挂载）
+   ============================================================ */
 
 body {
   text-align: center;
 }
 
+/* ---- 首页 / 歌曲列表 ---- */
 .page-intro {
   opacity: 0.7;
 }
@@ -37,54 +42,13 @@ body {
   margin-left: 0.15em;
 }
 
-/* 工具栏与复制按钮 */
-.toolbar {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  flex-wrap: wrap;
-  /* margin: 1.5rem 0 0.5rem; */
-  margin: 0 auto;
+/* 罗马字题名（列表中出现）用 Montserrat/Roboto Condensed */
+.romaji {
+  font-family: "Roboto Condensed", "Montserrat", "Noto Serif", ui-serif,
+    Georgia, serif;
 }
 
-.toolbar-label {
-  opacity: 0.7;
-  font-size: 0.9em;
-}
-
-.copy-btn {
-  font: inherit;
-  font-size: 0.85rem;
-  padding: 0.25rem 0.9rem;
-  border: 1px solid currentColor;
-  border-radius: 6px;
-  background: transparent;
-  opacity: 0.85;
-  cursor: pointer;
-}
-
-.copy-btn:hover {
-  opacity: 1;
-}
-
-/* ruby 注音：行高预留注音空间，避免压行 */
-.lyrics {
-  margin-top: 0.8rem;
-}
-
-.lyric-line {
-  /* line-height: 2; */
-  margin: 0 0 0.2em;
-  font-size: var(--text-3xl);
-  font-weight: 900;
-  white-space: nowrap;
-  /* text-align: center; */
-}
-
-.lyric-line.empty {
-  height: 1.5em;
-}
-
+/* ---- ruby 注音（全站，render-passthrough 生成） ---- */
 ruby {
   ruby-position: over;
 }
@@ -95,59 +59,7 @@ rt {
   font-weight: 900;
 }
 
-/* Montserrat 用法示例：
-   罗马字题名等拉丁文本用 Montserrat（缺字回落衬线族）。
-   其他想用 Montserrat 的地方照抄 font-family: "Montserrat", ... 即可。 */
-.romaji {
-  font-family: "Roboto Condensed", "Noto Serif", ui-serif, Georgia, serif;
-}
-
-/* ---- 罗马字注音行：(…) 整行内容，不是歌词正文 ----
-   开关：工具栏「罗马字」按钮给 .lyrics 加/去 .no-romaji；
-   样式单独在此调（字号/颜色/斜体/字距/字体） */
-.romaji-line {
-  font-family: "Roboto Condensed", "Noto Serif", ui-serif, Georgia, serif;
-  font-size: 1.25em;
-  font-weight: 500;
-  opacity: 0.75;
-  /* letter-spacing: 0.03em; */
-  margin: 0 0 0.1em;
-}
-
-.lyrics.no-romaji .romaji-line {
-  display: none;
-}
-
-/* 罗马字开关按钮（与复制按钮同风格；关时为半透明删除线态） */
-.romaji-toggle {
-  font: inherit;
-  font-size: 0.85rem;
-  padding: 0.25rem 0.9rem;
-  border: 1px solid currentColor;
-  border-radius: 6px;
-  background: transparent;
-  opacity: 0.85;
-  cursor: pointer;
-}
-
-.romaji-toggle:hover {
-  opacity: 1;
-}
-
-.romaji-toggle[aria-pressed="false"] {
-  opacity: 0.45;
-  text-decoration: line-through;
-}
-
-/* 片假名的英文原词标注（クリア{Clear}）：样式可在此单独调 */
-rt.rt-gloss {
-  font-style: normal;
-  letter-spacing: 0.02em;
-}
-
-/* ---- 歌曲页完全居中 ----
-   标题区 / 正文列 / 页脚水平居中，消除右侧空白；
-   歌词行文字也居中对齐（复制文本不受影响，来自段结构数据） */
+/* ---- 歌曲页排版：完全居中 + 歌词逐行 ---- */
 #single_header,
 .article-col,
 article > footer {
@@ -155,8 +67,11 @@ article > footer {
   margin-right: auto;
 }
 
-.lyrics,
-.lyric-line,
-.romaji-line {
-  text-align: center;
+.article-content {
+  /* Markdown 软换行按行显示（歌词一行一句，无需硬换行标记） */
+  white-space: pre-line;
+  /* 行高留足，避免 ruby 注音与相邻行重叠 */
+  line-height: 2.4;
+  /* 歌词字号（原 .lyric-line 的大字意向） */
+  font-size: 1.25rem;
 }
