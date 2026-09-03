@@ -1,26 +1,31 @@
-{{/* 自写精简 footer（替代主题版）：copyright 行内附带构建时间 + 右下角 Powered by。
-      主题升级时若结构大改需对照；功能面与我们配置（无 footer 菜单）匹配。 */}}
+{{/* 自写精简 footer（替代主题版）：copyright 行内附带构建时间 + 右下角 Powered
+by。 主题升级时若结构大改需对照；功能面与我们配置（无 footer 菜单）匹配。 */}}
 <footer id="site-footer" class="py-10 print:hidden">
   <div class="flex flex-wrap items-center justify-between gap-2">
     <p class="text-sm text-neutral-500 dark:text-neutral-400">
-      {{- with replace .Site.Params.copyright "{ year }" now.Year }}
-        {{ . | markdownify }}
-      {{- else }}
-        &copy; {{ now.Format "2006" }}
-        {{- with .Site.Params.Author.name }}
-          {{ . | markdownify }}
-        {{- else }}
-          {{ .Site.Title | markdownify }}
-        {{- end }}
-      {{- end }}
-      <span class="build-info">· 构建：{{ now | time.Format "2006-01-02 15:04:05 -07:00" }}</span>
+      {{- with replace .Site.Params.copyright "{ year }" now.Year }} {{ . |
+      markdownify }} {{- else }} &copy; {{ now.Format "2006" }} {{- with
+      .Site.Params.Author.name }} {{ . | markdownify }} {{- else }} {{
+      .Site.Title | markdownify }} {{- end }} {{- end }}
+    </p>
+    <p class="text-sm text-neutral-500 dark:text-neutral-400">
+      Last Updated: {{ now | time.Format "2006-01-02 15:04:05 -07:00" }}
     </p>
     <p class="text-xs text-neutral-500 dark:text-neutral-400">
-      {{ $hugo := printf `<a class="hover:underline hover:decoration-primary-400 hover:text-primary-500"
-        href="https://gohugo.io/" target="_blank" rel="noopener noreferrer">Hugo</a>` }}
-      {{ $blowfish := printf `<a class="hover:underline hover:decoration-primary-400 hover:text-primary-500"
-        href="https://blowfish.page/" target="_blank" rel="noopener noreferrer">Blowfish</a>` }}
-      {{ i18n "footer.powered_by" (dict "Hugo" $hugo "Theme" $blowfish) | safeHTML }}
+      {{ $hugo := printf `<a
+        class="hover:underline hover:decoration-primary-400 hover:text-primary-500"
+        href="https://gohugo.io/"
+        target="_blank"
+        rel="noopener noreferrer"
+        >Hugo</a
+      >` }} {{ $blowfish := printf `<a
+        class="hover:underline hover:decoration-primary-400 hover:text-primary-500"
+        href="https://blowfish.page/"
+        target="_blank"
+        rel="noopener noreferrer"
+        >Blowfish</a
+      >` }} {{ i18n "footer.powered_by" (dict "Hugo" $hugo "Theme" $blowfish) |
+      safeHTML }}
     </p>
   </div>
 </footer>
