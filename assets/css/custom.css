@@ -78,9 +78,9 @@ article > footer {
   /* 歌词字号（原 .lyric-line 的大字意向） */
   font-size: 2em;
   font-weight: 900;
-  white-space: pre-line;
   
   & p {
+    white-space: pre-line;
     margin: 2em auto;
     /* 关键：prose p 默认 line-height 1.75 会盖掉父级设置，
        必须在此显式声明，给 ruby 注音留足半行距（数值可调 2.0~2.4） */
