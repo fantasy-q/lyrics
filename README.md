@@ -7,8 +7,8 @@
 ## 快速开始
 
 ```powershell
-# 安装 Blowfish（固定提交，与 CI 完全一致；见「版本同步」）
-git clone https://github.com/nunocoracao/blowfish.git themes/blowfish
+# 安装 Blowfish（固定提交 + 强制 LF，与 CI 完全一致；见「版本同步」）
+git -c core.autocrlf=false clone https://github.com/nunocoracao/blowfish.git themes/blowfish
 git -C themes/blowfish checkout 7ab6a75d42e0131f51a28fd361656e7a89e0a8d6
 
 hugo server          # http://localhost:1313
@@ -70,6 +70,8 @@ hugo --gc --minify   # 生产构建 → public/
 
 - **Hugo**：本地与 CI 都用 **0.165.0 extended**（workflow 里 `peaceiris/actions-hugo` 固定 `hugo-version: "0.165.0"`）。
 - **Blowfish**：本地与 CI 都钉在提交 **`7ab6a75`**（`.github/workflows/deploy.yml` 的 checkout 行与本 README 的安装命令必须一致）。
+- **行尾统一 LF**：本仓库 `.gitattributes` 已强制 `eol=lf`；主题克隆用 `-c core.autocrlf=false`。
+  若 CSS 改动后本地与线上 bundle hash 不一致，先查行尾（CRLF vs LF）——这是曾导致漂移的根因。
 - **更新主题（两步一起做，否则漂移）**：
   1. 本地：`Remove-Item -Recurse -Force themes\blowfish`，再按「快速开始」克隆到新提交；
   2. 把新提交的**完整 sha** 同步替换到 `.github/workflows/deploy.yml` 与本 README。
