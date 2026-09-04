@@ -1,0 +1,15 @@
+# -- Site 基础配置（Blowfish） --
+theme: blowfish
+# 本地/预览默认根路径；生产由 CI 的 --baseURL（configure-pages）覆盖为 https://fantasy-q.github.io/lyrics/
+baseURL: "http://localhost:1313/"
+defaultContentLanguage: zh-cn
+enableRobotsTXT: true
+hasCJKLanguage: true
+enableEmoji: true
+
+outputs:
+  home: ["HTML", "RSS", "JSON"]
+
+taxonomies:
+  tag: tags
+  category: categories

@@ -1,0 +1,27 @@
+# -- Markup --
+# 原 TOML 转 YAML；内容同 Blowfish 主题默认（goldmark unsafe / attribute / math passthrough）
+# 并保留行内 passthrough 定界符 { } 用于歌词 ruby（{文字|注音}）
+goldmark:
+  parser:
+    wrapStandAloneImageWithinParagraph: false
+    attribute:
+      block: true
+  renderer:
+    unsafe: true
+  extensions:
+    passthrough:
+      enable: true
+      delimiters:
+        block:
+          - ['\[', '\]']
+          - ['$$', '$$']
+        inline:
+          - ['\(', '\)']
+          - ['{', '}']
+
+highlight:
+  noClasses: false
+
+tableOfContents:
+  startLevel: 2
+  endLevel: 4

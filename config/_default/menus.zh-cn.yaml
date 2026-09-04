@@ -1,0 +1,9 @@
+# -- 主菜单 --
+main:
+  - name: 歌曲
+    pageRef: songs
+    weight: 10
+  # GitHub 图标入口（不设 name = 只显示图标）
+  - url: "https://github.com/fantasy-q/lyrics"
+    pre: github
+    weight: 20

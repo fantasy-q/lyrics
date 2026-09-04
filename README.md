@@ -21,7 +21,7 @@ hugo --gc --minify   # 生产构建 → public/
 
 | 路径 | 说明 |
 |---|---|
-| `config/_default/*.toml` | Blowfish 配置；`markup.toml` 注册行内 passthrough `{ }` |
+| `config/_default/*.yaml` | Blowfish 配置；`markup.yaml` 注册行内 passthrough `{ }` |
 | `layouts/_markup/render-passthrough.html` | **核心**：`{文字|注音}` → `<ruby>`（按第一个 `\|` 切分，无 `\|` 则字面输出） |
 | `content/songs/<slug>.md` | 每歌一页：YAML front matter + Markdown 歌词正文 |
 | `layouts/_default/single.html` | 歌曲页模板（自写精简版，不再整份拷贝主题）：`data-lang`（按语言切字体）+ header（ruby 标题/artist/links）+ 歌词正文 |
