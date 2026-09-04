@@ -1,2 +1,3 @@
 # Auto detect text files and perform LF normalization
-* text=auto
+# eol=lf：任何平台 checkout 都得到 LF，保证本地构建与 CI 字节一致（避免 CRLF 造成 hash 漂移）
+* text=auto eol=lf
