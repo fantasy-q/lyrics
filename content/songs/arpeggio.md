@@ -34,7 +34,7 @@ I know I'm　alone
 I'm sorry　{涙|なみだ}{流|なが}せないよ
 {貴方|あなた}の{哀|かな}しみは　{貴方|あなた}の{物|もの}
 I know you're　alone
-{代|か}わりに__{弾|ひ}く__よ　この{アルペジオ|Arpeggio}
+{代|か}わりに{弾|ひ}くよ　この{アルペジオ|Arpeggio}
 
 {大人|おとな}になって　{増|ふ}え{続|つづ}けていく「{過去|かこ}」
 {遠|とお}のいて　{見|み}えにくくなる「{未来|みらい}」
@@ -68,7 +68,7 @@ We're going up and down, you know
 Say NO to the world
 say NO to the world
 
-We're going up and down, you know
+(We're) Going up and down, you know
 We're going up and down, you know
 Say NO to the world
 say NO to the world　now
